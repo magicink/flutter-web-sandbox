@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_web_sandbox/models/User.dart';
 import 'package:http/http.dart' as http;
 
 import 'models/Album.dart';
@@ -52,12 +51,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Album> futureAlbum;
-  Future<List<User>> futureUsers;
 
   @override
   void initState() {
     super.initState();
-    futureUsers = getUsers();
+    futureAlbum = fetchAlbumAsync();
   }
 
   Future<Album> fetchAlbumAsync() async {
@@ -69,20 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<List<User>> getUsers () async {
-    final response = await http.get(Uri.http('localhost:7298', 'users'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final users = <User>[];
-      for(Map user in data) {
-        users.add(User.fromJson(user));
-      }
-      return users;
-    } else {
-      throw Exception('Failed to load users');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -91,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return FutureBuilder<List<User>>(future: futureUsers, builder: (context, snapshot) {
+    return FutureBuilder<Album>(future: futureAlbum, builder: (context, snapshot) {
       if (snapshot.connectionState != ConnectionState.done) {
         return CircularProgressIndicator();
       }
